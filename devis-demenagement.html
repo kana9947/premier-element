@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Obtenez un estime instantane pour votre demenagement. Calculez le cout en ligne avec Premier Element.">
+  <title>Estimateur de demenagement | Premier Element</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="images/logo-icon.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* --- Styles specifiques estimateur --- */
+    .estimateur-hero {
+      padding: 140px 0 60px;
+      background: linear-gradient(135deg, #8B3A10 0%, #D4652A 100%);
+      color: #fff;
+      text-align: center;
+    }
+    .estimateur-hero h1 { color: #fff; }
+
+    .stepper {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 40px auto 48px;
+      max-width: 600px;
+    }
+    .step-indicator {
+      flex: 1;
+      text-align: center;
+      position: relative;
+    }
+    .step-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--gray-200);
+      color: var(--gray-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      margin: 0 auto 8px;
+      transition: var(--transition);
+    }
+    .step-indicator.active .step-circle,
+    .step-indicator.done .step-circle {
+      background: var(--demenagement);
+      color: #fff;
+    }
+    .step-indicator.done .step-circle { background: var(--success); }
+    .step-label {
+      font-size: 0.8rem;
+      color: var(--gray-400);
+      font-weight: 500;
+    }
+    .step-indicator.active .step-label { color: var(--gray-700); }
+    .step-indicator.done .step-label { color: var(--success); }
+
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+
+    .devis-card {
+      background: #fff;
+      border-radius: var(--border-radius);
+      padding: 40px;
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .devis-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+    .devis-card .subtitle {
+      color: var(--gray-500);
+      margin-bottom: 32px;
+    }
+
+    /* Adresses */
+    .address-group {
+      border: 2px dashed var(--gray-200);
+      border-radius: var(--border-radius-sm);
+      padding: 24px;
+      margin-bottom: 16px;
+      position: relative;
+      transition: var(--transition);
+    }
+    .address-group:hover { border-color: var(--gray-300); }
+
+    .address-group .group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .address-group .group-number {
+      background: var(--demenagement);
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-right: 10px;
+    }
+    .address-group .group-title {
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+
+    .btn-remove {
+      background: none;
+      border: 1px solid var(--error);
+      color: var(--error);
+      border-radius: var(--border-radius-sm);
+      padding: 6px 14px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: var(--transition);
+    }
+    .btn-remove:hover { background: var(--error); color: #fff; }
+
+    .btn-add {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border: 2px dashed var(--demenagement);
+      background: rgba(212, 101, 42, 0.05);
+      color: var(--demenagement);
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: var(--transition);
+      width: 100%;
+      justify-content: center;
+      margin-top: 8px;
+      font-family: var(--font-body);
+    }
+    .btn-add:hover {
+      background: rgba(212, 101, 42, 0.1);
+      border-color: var(--accent-dark);
+    }
+
+    .address-status {
+      font-size: 0.8rem;
+      margin-top: 8px;
+      min-height: 20px;
+    }
+    .address-status.found { color: var(--success); }
+    .address-status.not-found { color: var(--error); }
+    .address-status.loading { color: var(--gray-400); }
+
+    /* Taille logement */
+    .taille-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .taille-option {
+      position: relative;
+    }
+    .taille-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .taille-option label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 8px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--gray-600);
+    }
+    .taille-option label .taille-icon {
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+    }
+    .taille-option input:checked + label {
+      border-color: var(--demenagement);
+      background: rgba(212, 101, 42, 0.06);
+      color: var(--demenagement);
+      font-weight: 700;
+    }
+    .taille-option label:hover {
+      border-color: var(--gray-300);
+      background: var(--gray-50);
+    }
+    #autreDescription {
+      display: none;
+      margin-top: 8px;
+    }
+    #autreDescription.visible { display: block; }
+
+    @media (max-width: 768px) {
+      .taille-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* Calendrier & heure */
+    .datetime-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    input[type="date"],
+    input[type="time"] {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--border-radius-sm);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      color: var(--gray-700);
+      transition: var(--transition);
+    }
+    input[type="date"]:focus,
+    input[type="time"]:focus {
+      outline: none;
+      border-color: var(--demenagement);
+      box-shadow: 0 0 0 3px rgba(212, 101, 42, 0.1);
+    }
+
+    .date-info {
+      margin-top: 16px;
+      padding: 16px;
+      background: rgba(212, 101, 42, 0.05);
+      border-radius: var(--border-radius-sm);
+      border: 1px solid rgba(212, 101, 42, 0.2);
+      display: none;
+    }
+    .date-info.visible { display: block; }
+    .date-info .tag {
+      display: inline-block;
+      background: var(--demenagement);
+      color: #fff;
+      padding: 2px 10px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-right: 6px;
+      margin-bottom: 4px;
+    }
+
+    /* Resultats */
+    .resultat-box {
+      border: 2px solid var(--demenagement);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+    .resultat-header {
+      background: linear-gradient(135deg, #8B3A10, #D4652A);
+      color: #fff;
+      padding: 24px 32px;
+      text-align: center;
+    }
+    .resultat-header h2 { color: #fff; margin-bottom: 4px; }
+    .resultat-total {
+      font-size: 3rem;
+      font-weight: 800;
+      font-family: var(--font-heading);
+      color: #fff;
+    }
+    .resultat-total .devise { font-size: 1.5rem; }
+
+    .resultat-body { padding: 32px; }
+
+    .resultat-ligne {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 0.95rem;
+    }
+    .resultat-ligne:last-child { border-bottom: none; }
+    .resultat-ligne .label { color: var(--gray-500); }
+    .resultat-ligne .value { font-weight: 600; color: var(--gray-700); }
+    .resultat-ligne.total-ligne {
+      border-top: 2px solid var(--gray-200);
+      border-bottom: none;
+      padding-top: 16px;
+      margin-top: 8px;
+    }
+    .resultat-ligne.total-ligne .label { font-weight: 700; color: var(--gray-800); font-size: 1.1rem; }
+    .resultat-ligne.total-ligne .value { font-weight: 800; color: var(--demenagement); font-size: 1.1rem; }
+
+    .resultat-section-title {
+      font-weight: 700;
+      color: var(--gray-800);
+      margin: 20px 0 8px;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .resultat-section-title:first-child { margin-top: 0; }
+
+    .resultat-note {
+      margin-top: 24px;
+      padding: 16px;
+      background: var(--gray-50);
+      border-radius: var(--border-radius-sm);
+      font-size: 0.85rem;
+      color: var(--gray-500);
+      text-align: center;
+    }
+
+    .btn-nav-group {
+      display: flex;
+      gap: 16px;
+      margin-top: 32px;
+    }
+    .btn-nav-group .btn { flex: 1; }
+
+    .loading-spinner {
+      display: none;
+      text-align: center;
+      padding: 40px;
+      color: var(--gray-500);
+    }
+    .loading-spinner.visible { display: block; }
+    .spinner-icon {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--gray-200);
+      border-top-color: var(--demenagement);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 768px) {
+      .devis-card { padding: 24px; }
+      .datetime-grid { grid-template-columns: 1fr; }
+      .resultat-total { font-size: 2.2rem; }
+      .btn-nav-group { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header" id="header">
+    <div class="container">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">PE</div>
+        Premier <span>Element</span>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Accueil</a>
+        <a href="services.html">Services</a>
+        <a href="about.html">A propos</a>
+        <a href="contact.html">Contact</a>
+        <a href="contact.html" class="btn btn-primary nav-cta">Soumission gratuite</a>
+      </nav>
+      <button class="burger" id="burger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="estimateur-hero">
+    <div class="container">
+      <h1>Estimateur de <span style="color: var(--accent);">demenagement</span></h1>
+      <p style="max-width: 600px; margin: 16px auto 0; opacity: 0.9; font-size: 1.1rem;">
+        Obtenez un estime instantane du cout de votre demenagement en quelques clics.
+      </p>
+    </div>
+  </section>
+
+  <!-- ESTIMATEUR -->
+  <section class="section">
+    <div class="container">
+
+      <!-- Stepper -->
+      <div class="stepper">
+        <div class="step-indicator active" data-step="1">
+          <div class="step-circle">1</div>
+          <div class="step-label">Adresses</div>
+        </div>
+        <div class="step-indicator" data-step="2">
+          <div class="step-circle">2</div>
+          <div class="step-label">Date & heure</div>
+        </div>
+        <div class="step-indicator" data-step="3">
+          <div class="step-circle">3</div>
+          <div class="step-label">Estime</div>
+        </div>
+      </div>
+
+      <!-- ETAPE 1 : Adresses -->
+      <div class="step-panel active" id="step1">
+        <div class="devis-card">
+          <h2>Type de logement</h2>
+          <p class="subtitle">Quelle est la taille du logement a demenager?</p>
+
+          <div class="taille-grid">
+            <div class="taille-option">
+              <input type="radio" name="tailleLogement" id="taille1_5" value="1.5">
+              <label for="taille1_5"><span class="taille-icon">&#9642;</span>1 &frac12;</label>
+            </div>
+            <div class="taille-option">
+              <input type="radio" name="tailleLogement" id="taille2_5" value="2.5">
+              <label for="taille2_5"><span class="taille-icon">&#9643;</span>2 &frac12;</label>
+            </div>
+            <div class="taille-option">
+              <input type="radio" name="tailleLogement" id="taille3_5" value="3.5" checked>
+              <label for="taille3_5"><span class="taille-icon">&#9632;</span>3 &frac12;</label>
+            </div>
+            <div class="taille-option">
+              <input type="radio" name="tailleLogement" id="taille4_5" value="4.5">
+              <label for="taille4_5"><span class="taille-icon">&#9632;</span>4 &frac12;</label>
+            </div>
+            <div class="taille-option">
+              <input type="radio" name="tailleLogement" id="taille5_5" value="5.5">
+              <label for="taille5_5"><span class="taille-icon">&#9633;</span>5 &frac12;</label>
+            </div>
+            <div class="taille-option">
+              <input type="radio" name="tailleLogement" id="tailleMaison" value="maison">
+              <label for="tailleMaison"><span class="taille-icon">&#127968;</span>Maison</label>
+            </div>
+            <div class="taille-option">
+              <input type="radio" name="tailleLogement" id="tailleCommercial" value="commercial">
+              <label for="tailleCommercial"><span class="taille-icon">&#127970;</span>Commercial</label>
+            </div>
+            <div class="taille-option">
+              <input type="radio" name="tailleLogement" id="tailleAutre" value="autre">
+              <label for="tailleAutre"><span class="taille-icon">&#9998;</span>Autre</label>
+            </div>
+          </div>
+
+          <div id="autreDescription">
+            <div class="form-group">
+              <label for="autreDesc">Decrivez votre situation</label>
+              <textarea id="autreDesc" placeholder="Ex: Entreposage, quelques meubles seulement, piano, etc." style="min-height: 80px;"></textarea>
+            </div>
+          </div>
+
+          <hr style="border: none; border-top: 1px solid var(--gray-200); margin: 32px 0;">
+
+          <h2>Adresses de ramassage</h2>
+          <p class="subtitle">Ou doit-on ramasser vos biens? Vous pouvez ajouter plusieurs adresses.</p>
+
+          <div id="pickupList">
+            <div class="address-group" data-index="0">
+              <div class="group-header">
+                <div>
+                  <span class="group-number">1</span>
+                  <span class="group-title">Adresse de ramassage</span>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom: 12px;">
+                <input type="text" class="pickup-address" placeholder="Ex: 20 rue Bigaouette, Quebec, QC G1K 4K5" required>
+              </div>
+              <div class="address-status" data-for="pickup-0"></div>
+            </div>
+          </div>
+
+          <button class="btn-add" id="addPickup" type="button">+ Ajouter une adresse de ramassage</button>
+
+          <h2 style="margin-top: 40px;">Adresses de depot</h2>
+          <p class="subtitle">Ou doit-on livrer vos biens?</p>
+
+          <div id="dropoffList">
+            <div class="address-group" data-index="0">
+              <div class="group-header">
+                <div>
+                  <span class="group-number" style="background: var(--menage);">1</span>
+                  <span class="group-title">Adresse de depot</span>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom: 12px;">
+                <input type="text" class="dropoff-address" placeholder="Ex: 500 Grande Allee Est, Quebec, QC G1R 2J7" required>
+              </div>
+              <div class="address-status" data-for="dropoff-0"></div>
+            </div>
+          </div>
+
+          <button class="btn-add" id="addDropoff" type="button" style="border-color: var(--menage); color: var(--menage); background: rgba(42,140,90,0.05);">+ Ajouter une adresse de depot</button>
+
+          <div class="btn-nav-group">
+            <a href="services.html#demenagement" class="btn btn-outline" style="flex: 0.5;">&#8592; Retour</a>
+            <button class="btn btn-primary" id="toStep2" style="background: var(--demenagement);">Continuer &#8594;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ETAPE 2 : Date & Heure -->
+      <div class="step-panel" id="step2">
+        <div class="devis-card">
+          <h2>Date et heure du demenagement</h2>
+          <p class="subtitle">Choisissez la date et l'heure souhaitee pour votre demenagement.</p>
+
+          <div class="datetime-grid">
+            <div class="form-group">
+              <label for="devisDate">Date du demenagement *</label>
+              <input type="date" id="devisDate" required>
+            </div>
+            <div class="form-group">
+              <label for="devisHeure">Heure souhaitee *</label>
+              <input type="time" id="devisHeure" value="08:00" required>
+            </div>
+          </div>
+
+          <div class="date-info" id="dateInfo">
+            <div id="dateInfoTags"></div>
+            <p id="dateInfoText" style="margin: 8px 0 0; font-size: 0.9rem; color: var(--gray-600);"></p>
+          </div>
+
+          <div class="btn-nav-group">
+            <button class="btn btn-outline" id="backToStep1">&#8592; Adresses</button>
+            <button class="btn btn-primary" id="toStep3" style="background: var(--demenagement);">Calculer l'estime &#8594;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ETAPE 3 : Resultat -->
+      <div class="step-panel" id="step3">
+
+        <div class="loading-spinner" id="loadingSpinner">
+          <div class="spinner-icon"></div>
+          <p style="margin-top: 16px;">Calcul de votre estime en cours...</p>
+          <p style="font-size: 0.85rem;">Geocodage des adresses et optimisation de la route</p>
+        </div>
+
+        <div id="resultatContainer" style="display: none;">
+          <div class="resultat-box">
+            <div class="resultat-header">
+              <h2>Votre estime</h2>
+              <div class="resultat-total"><span class="devise">$</span><span id="totalMontant">0</span></div>
+              <p style="opacity: 0.8; margin-top: 4px; font-size: 0.9rem;">Taxes incluses (TPS + TVQ)</p>
+            </div>
+
+            <div class="resultat-body">
+              <div class="resultat-section-title">Details du demenagement</div>
+              <div class="resultat-ligne">
+                <span class="label">Type de logement</span>
+                <span class="value" id="resTaille">—</span>
+              </div>
+              <div class="resultat-ligne">
+                <span class="label">Equipe</span>
+                <span class="value" id="resEquipe">3 demenageurs + camion</span>
+              </div>
+              <div class="resultat-ligne">
+                <span class="label">Distance totale estimee</span>
+                <span class="value" id="resDistance">—</span>
+              </div>
+              <div class="resultat-ligne">
+                <span class="label">Adresses de ramassage</span>
+                <span class="value" id="resPickups">—</span>
+              </div>
+              <div class="resultat-ligne">
+                <span class="label">Adresses de depot</span>
+                <span class="value" id="resDropoffs">—</span>
+              </div>
+
+              <div class="resultat-section-title">Temps estime</div>
+              <div class="resultat-ligne">
+                <span class="label">Chargement</span>
+                <span class="value" id="resTempsCharg">—</span>
+              </div>
+              <div class="resultat-ligne">
+                <span class="label">Route entre adresses</span>
+                <span class="value" id="resTempsRoute">—</span>
+              </div>
+              <div class="resultat-ligne">
+                <span class="label">Dechargement</span>
+                <span class="value" id="resTempsDecharg">—</span>
+              </div>
+              <div class="resultat-ligne" style="font-weight: 600;">
+                <span class="label">Temps de travail</span>
+                <span class="value" id="resTempsTravail">—</span>
+              </div>
+
+              <div class="resultat-section-title">Deplacement</div>
+              <div class="resultat-ligne">
+                <span class="label">Distance depuis notre base</span>
+                <span class="value" id="resDistBase">—</span>
+              </div>
+              <div class="resultat-ligne">
+                <span class="label">Temps estime depuis la base</span>
+                <span class="value" id="resTempsBase">—</span>
+              </div>
+              <div class="resultat-ligne" id="ligneDeplacementType">
+                <span class="label" id="resDeplacementLabel">Deplacement facture</span>
+                <span class="value" id="resDeplacementHeures">—</span>
+              </div>
+
+              <div class="resultat-section-title">Tarification</div>
+              <div class="resultat-ligne">
+                <span class="label">Taux horaire (3 demenageurs + camion)</span>
+                <span class="value" id="resTaux">—</span>
+              </div>
+              <div id="resMajorations"></div>
+              <div class="resultat-ligne">
+                <span class="label">Travail (<span id="resHeuresTravail">0</span>h)</span>
+                <span class="value" id="resCoutTravail">—</span>
+              </div>
+              <div class="resultat-ligne">
+                <span class="label">Deplacement (<span id="resHeuresDepl">0</span>h)</span>
+                <span class="value" id="resCoutDepl">—</span>
+              </div>
+
+              <div class="resultat-section-title">Total</div>
+              <div class="resultat-ligne">
+                <span class="label">Sous-total</span>
+                <span class="value" id="resSousTotal">—</span>
+              </div>
+              <div class="resultat-ligne">
+                <span class="label">TPS (5%)</span>
+                <span class="value" id="resTPS">—</span>
+              </div>
+              <div class="resultat-ligne">
+                <span class="label">TVQ (9.975%)</span>
+                <span class="value" id="resTVQ">—</span>
+              </div>
+              <div class="resultat-ligne total-ligne">
+                <span class="label">Total estime</span>
+                <span class="value" id="resTotalFinal">—</span>
+              </div>
+
+              <div class="resultat-note">
+                * Cet estime est a titre indicatif et base sur 3 demenageurs + camion. Le cout final peut varier selon le volume reel, le nombre d'escaliers, les conditions d'acces et le trafic. Contactez-nous pour confirmer votre reservation.
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-nav-group" style="margin-top: 32px;">
+            <button class="btn btn-outline" id="backToStep2">&#8592; Modifier</button>
+            <a href="contact.html" class="btn btn-primary" style="background: var(--demenagement);">Confirmer et reserver &#8594;</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="logo">
+            <div class="logo-icon">PE</div>
+            Premier <span>Element</span>
+          </a>
+          <p>Votre partenaire multi-services de confiance. Securite, demenagement et menage professionnel.</p>
+        </div>
+        <div>
+          <h4>Services</h4>
+          <div class="footer-links">
+            <a href="services.html#securite">Securite</a>
+            <a href="services.html#demenagement">Demenagement</a>
+            <a href="services.html#menage">Menage</a>
+          </div>
+        </div>
+        <div>
+          <h4>Compagnie</h4>
+          <div class="footer-links">
+            <a href="about.html">A propos</a>
+            <a href="about.html#faq">FAQ</a>
+            <a href="contact.html">Contact</a>
+          </div>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <div class="footer-contact-item">
+            <span class="icon">&#9742;</span>
+            <span>(367) 380-7458</span>
+          </div>
+          <div class="footer-contact-item">
+            <span class="icon">&#9993;</span>
+            <span>pesecurite02@gmail.com</span>
+          </div>
+          <div class="footer-contact-item">
+            <span class="icon">&#9873;</span>
+            <span>20 rue Bigaouette, G1K 4K, Quebec</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 Premier Element. Tous droits reserves.</span>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook">f</a>
+          <a href="#" aria-label="Instagram">in</a>
+          <a href="#" aria-label="LinkedIn">Li</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/devis-engine.js"></script>
+  <script src="js/devis-ui.js"></script>
+</body>
+</html>

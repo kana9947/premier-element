@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin — Gestion des tarifs | Premier Element</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="images/logo-icon.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .admin-hero {
+      padding: 140px 0 40px;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: #fff;
+      text-align: center;
+    }
+    .admin-hero h1 { color: #fff; }
+
+    /* Login */
+    .login-card {
+      max-width: 400px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: var(--border-radius);
+      padding: 40px;
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-md);
+      text-align: center;
+    }
+    .login-card h2 { margin-bottom: 24px; }
+    #loginError {
+      color: var(--error);
+      font-size: 0.9rem;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* Admin panel */
+    .admin-panel { display: none; }
+    .admin-panel.visible { display: block; }
+
+    .tarif-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .tarif-card {
+      background: #fff;
+      border-radius: var(--border-radius);
+      padding: 32px;
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+    }
+    .tarif-card h3 {
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--gray-100);
+    }
+
+    .tarif-field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 16px;
+    }
+    .tarif-field label {
+      font-weight: 500;
+      color: var(--gray-600);
+      font-size: 0.95rem;
+      flex: 1;
+    }
+    .tarif-field .input-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .tarif-field input {
+      width: 100px;
+      padding: 10px 12px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--border-radius-sm);
+      font-size: 1rem;
+      text-align: right;
+      font-family: var(--font-body);
+      color: var(--gray-700);
+      transition: var(--transition);
+    }
+    .tarif-field input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(27,58,92,0.1);
+    }
+    .tarif-field .unit {
+      color: var(--gray-400);
+      font-size: 0.9rem;
+      min-width: 30px;
+    }
+
+    .save-bar {
+      position: sticky;
+      bottom: 0;
+      background: #fff;
+      border-top: 1px solid var(--gray-200);
+      padding: 16px 0;
+      margin-top: 40px;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+    }
+    .save-bar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .save-status {
+      font-size: 0.9rem;
+      color: var(--gray-500);
+    }
+    .save-status.saved { color: var(--success); font-weight: 600; }
+    .save-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .last-update {
+      text-align: center;
+      color: var(--gray-400);
+      font-size: 0.85rem;
+      margin-top: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .tarif-grid { grid-template-columns: 1fr; }
+      .tarif-field { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .tarif-field input { width: 100%; }
+      .save-bar .container { flex-direction: column; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header" id="header">
+    <div class="container">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">PE</div>
+        Premier <span>Element</span>
+      </a>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html">Accueil</a>
+        <a href="services.html">Services</a>
+        <a href="about.html">A propos</a>
+        <a href="contact.html">Contact</a>
+        <a href="contact.html" class="btn btn-primary nav-cta">Soumission gratuite</a>
+      </nav>
+      <button class="burger" id="burger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="admin-hero">
+    <div class="container">
+      <h1>Panneau <span style="color: var(--accent);">Administration</span></h1>
+      <p style="opacity: 0.8;">Gerez vos tarifs de demenagement en temps reel.</p>
+    </div>
+  </section>
+
+  <!-- LOGIN -->
+  <section class="section" id="loginSection">
+    <div class="container">
+      <div class="login-card">
+        <h2>Connexion admin</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="adminPass">Mot de passe</label>
+            <input type="password" id="adminPass" placeholder="Entrez le mot de passe admin" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Se connecter</button>
+          <div id="loginError">Mot de passe incorrect.</div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN PANEL -->
+  <section class="section admin-panel" id="adminPanel">
+    <div class="container">
+
+      <div class="tarif-grid">
+
+        <!-- Taux horaires -->
+        <div class="tarif-card">
+          <h3>Taux horaires (3 demenageurs + camion)</h3>
+
+          <div class="tarif-field">
+            <label>Taux de base</label>
+            <div class="input-group">
+              <input type="number" id="tauxHoraireBase" min="0" step="5">
+              <span class="unit">$/h</span>
+            </div>
+          </div>
+
+          <div class="tarif-field">
+            <label>Majoration fin de semaine (sam/dim)</label>
+            <div class="input-group">
+              <input type="number" id="majorationWeekend" min="0" step="5">
+              <span class="unit">$/h</span>
+            </div>
+          </div>
+
+          <div class="tarif-field">
+            <label>Majoration 1er juillet (25 juin - 7 juil.)</label>
+            <div class="input-group">
+              <input type="number" id="majorationJuillet" min="0" step="5">
+              <span class="unit">$/h</span>
+            </div>
+          </div>
+
+          <div class="tarif-field">
+            <label>Majoration fin de mois (3 derniers jours)</label>
+            <div class="input-group">
+              <input type="number" id="majorationFinMois" min="0" step="5">
+              <span class="unit">$/h</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deplacement -->
+        <div class="tarif-card">
+          <h3>Deplacement</h3>
+
+          <div class="tarif-field">
+            <label>Heure fixe de deplacement (toujours facturee)</label>
+            <div class="input-group">
+              <input type="number" id="heureFixeDeplacement" min="0.5" step="0.5">
+              <span class="unit">h</span>
+            </div>
+          </div>
+
+          <div class="tarif-field">
+            <label>Seuil hors ville (au-dela = temps reel)</label>
+            <div class="input-group">
+              <input type="number" id="seuilDeplacementMin" min="10" step="5">
+              <span class="unit">min</span>
+            </div>
+          </div>
+
+          <div class="tarif-field">
+            <label>Vitesse moyenne en ville</label>
+            <div class="input-group">
+              <input type="number" id="vitesseMoyenne" min="10" step="5">
+              <span class="unit">km/h</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Temps par taille de logement : Chargement -->
+        <div class="tarif-card" style="grid-column: 1 / -1;">
+          <h3>Temps de chargement par taille de logement</h3>
+
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+            <div class="tarif-field" style="flex-direction: column; align-items: flex-start;">
+              <label>1 &frac12;</label>
+              <div class="input-group">
+                <input type="number" id="temps_1_5_chargement" min="0" step="5">
+                <span class="unit">min</span>
+              </div>
+            </div>
+            <div class="tarif-field" style="flex-direction: column; align-items: flex-start;">
+              <label>2 &frac12;</label>
+              <div class="input-group">
+                <input type="number" id="temps_2_5_chargement" min="0" step="5">
+                <span class="unit">min</span>
+              </div>
+            </div>
+            <div class="tarif-field" style="flex-direction: column; align-items: flex-start;">
+              <label>3 &frac12;</label>
+              <div class="input-group">
+                <input type="number" id="temps_3_5_chargement" min="0" step="5">
+                <span class="unit">min</span>
+              </div>
+            </div>
+            <div class="tarif-field" style="flex-direction: column; align-items: flex-start;">
+              <label>4 &frac12;</label>
+              <div class="input-group">
+                <input type="number" id="temps_4_5_chargement" min="0" step="5">
+                <span class="unit">min</span>
+              </div>
+            </div>
+            <div class="tarif-field" style="flex-direction: column; align-items: flex-start;">
+              <label>5 &frac12;</label>
+              <div class="input-group">
+                <input type="number" id="temps_5_5_chargement" min="0" step="5">
+                <span class="unit">min</span>
+              </div>
+            </div>
+            <div class="tarif-field" style="flex-direction: column; align-items: flex-start;">
+              <label>Maison</label>
+              <div class="input-group">
+                <input type="number" id="temps_maison_chargement" min="0" step="5">
+                <span class="unit">min</span>
+              </div>
+            </div>
+            <div class="tarif-field" style="flex-direction: column; align-items: flex-start;">
+              <label>Commercial</label>
+              <div class="input-group">
+                <input type="number" id="temps_commercial_chargement" min="0" step="5">
+                <span class="unit">min</span>
+              </div>
+            </div>
+            <div class="tarif-field" style="flex-direction: column; align-items: flex-start;">
+              <label>Autre</label>
+              <div class="input-group">
+                <input type="number" id="temps_autre_chargement" min="0" step="5">
+                <span class="unit">min</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Temps par taille de logement : Dechargement -->
+        <div class="tarif-card" style="grid-column: 1 / -1;">
+          <h3>Temps de dechargement par taille de logement</h3>
+
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+            <div class="tarif-field" style="flex-direction: column; align-items: flex-start;">
+              <label>1 &frac12;</label>
+              <div class="input-group">
+                <input type="number" id="temps_1_5_dechargement" min="0" step="5">
+                <span class="unit">min</span>
+              </div>
+            </div>
+            <div class="tarif-field" style="flex-direction: column; align-items: flex-start;">
+              <label>2 &frac12;</label>
+              <div class="input-group">
+                <input type="number" id="temps_2_5_dechargement" min="0" step="5">
+                <span class="unit">min</span>
+              </div>
+            </div>
+            <div class="tarif-field" style="flex-direction: column; align-items: flex-start;">
+              <label>3 &frac12;</label>
+              <div class="input-group">
+                <input type="number" id="temps_3_5_dechargement" min="0" step="5">
+                <span class="unit">min</span>
+              </div>
+            </div>
+            <div class="tarif-field" style="flex-direction: column; align-items: flex-start;">
+              <label>4 &frac12;</label>
+              <div class="input-group">
+                <input type="number" id="temps_4_5_dechargement" min="0" step="5">
+                <span class="unit">min</span>
+              </div>
+            </div>
+            <div class="tarif-field" style="flex-direction: column; align-items: flex-start;">
+              <label>5 &frac12;</label>
+              <div class="input-group">
+                <input type="number" id="temps_5_5_dechargement" min="0" step="5">
+                <span class="unit">min</span>
+              </div>
+            </div>
+            <div class="tarif-field" style="flex-direction: column; align-items: flex-start;">
+              <label>Maison</label>
+              <div class="input-group">
+                <input type="number" id="temps_maison_dechargement" min="0" step="5">
+                <span class="unit">min</span>
+              </div>
+            </div>
+            <div class="tarif-field" style="flex-direction: column; align-items: flex-start;">
+              <label>Commercial</label>
+              <div class="input-group">
+                <input type="number" id="temps_commercial_dechargement" min="0" step="5">
+                <span class="unit">min</span>
+              </div>
+            </div>
+            <div class="tarif-field" style="flex-direction: column; align-items: flex-start;">
+              <label>Autre</label>
+              <div class="input-group">
+                <input type="number" id="temps_autre_dechargement" min="0" step="5">
+                <span class="unit">min</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Taxes -->
+        <div class="tarif-card">
+          <h3>Taxes</h3>
+
+          <div class="tarif-field">
+            <label>TPS (taxe federale)</label>
+            <div class="input-group">
+              <input type="number" id="taxeTPS" min="0" step="0.1">
+              <span class="unit">%</span>
+            </div>
+          </div>
+
+          <div class="tarif-field">
+            <label>TVQ (taxe provinciale)</label>
+            <div class="input-group">
+              <input type="number" id="taxeTVQ" min="0" step="0.1">
+              <span class="unit">%</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="last-update" id="lastUpdate"></div>
+
+    </div>
+  </section>
+
+  <!-- Save Bar -->
+  <div class="save-bar admin-panel" id="saveBar">
+    <div class="container">
+      <span class="save-status" id="saveStatus">Modifiez les valeurs ci-dessus</span>
+      <div class="save-buttons">
+        <button class="btn btn-outline" id="btnReset" style="border-color: var(--error); color: var(--error);">Reinitialiser</button>
+        <button class="btn btn-primary" id="btnSave">Sauvegarder les tarifs</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/devis-engine.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+      // --- MOT DE PASSE ADMIN ---
+      // Changez ce mot de passe selon votre preference
+      var ADMIN_PASSWORD = 'premier2026';
+
+      var loginForm = document.getElementById('loginForm');
+      var loginSection = document.getElementById('loginSection');
+      var adminPanel = document.getElementById('adminPanel');
+      var saveBar = document.getElementById('saveBar');
+      var loginError = document.getElementById('loginError');
+
+      // Verifier si deja connecte cette session
+      if (sessionStorage.getItem('pe_admin_auth') === 'true') {
+        showAdmin();
+      }
+
+      loginForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var pass = document.getElementById('adminPass').value;
+        if (pass === ADMIN_PASSWORD) {
+          sessionStorage.setItem('pe_admin_auth', 'true');
+          showAdmin();
+        } else {
+          loginError.style.display = 'block';
+        }
+      });
+
+      function showAdmin() {
+        loginSection.style.display = 'none';
+        adminPanel.classList.add('visible');
+        saveBar.classList.add('visible');
+        chargerFormulaire();
+      }
+
+      // --- CHARGER LES TARIFS DANS LE FORMULAIRE ---
+      function chargerFormulaire() {
+        var tarifs = DevisEngine.chargerTarifs();
+        var fields = [
+          'tauxHoraireBase', 'majorationWeekend', 'majorationJuillet',
+          'majorationFinMois', 'heureFixeDeplacement', 'seuilDeplacementMin',
+          'vitesseMoyenne', 'taxeTPS', 'taxeTVQ',
+          'temps_1_5_chargement', 'temps_1_5_dechargement',
+          'temps_2_5_chargement', 'temps_2_5_dechargement',
+          'temps_3_5_chargement', 'temps_3_5_dechargement',
+          'temps_4_5_chargement', 'temps_4_5_dechargement',
+          'temps_5_5_chargement', 'temps_5_5_dechargement',
+          'temps_maison_chargement', 'temps_maison_dechargement',
+          'temps_commercial_chargement', 'temps_commercial_dechargement',
+          'temps_autre_chargement', 'temps_autre_dechargement'
+        ];
+
+        fields.forEach(function (f) {
+          var el = document.getElementById(f);
+          if (el) el.value = tarifs[f];
+        });
+
+        // Derniere MAJ
+        if (tarifs.derniereMiseAJour) {
+          var d = new Date(tarifs.derniereMiseAJour);
+          document.getElementById('lastUpdate').textContent =
+            'Derniere mise a jour : ' + d.toLocaleDateString('fr-CA') + ' a ' + d.toLocaleTimeString('fr-CA');
+        }
+      }
+
+      // --- SAUVEGARDER ---
+      document.getElementById('btnSave').addEventListener('click', function () {
+        var tarifs = DevisEngine.chargerTarifs();
+        var fields = [
+          'tauxHoraireBase', 'majorationWeekend', 'majorationJuillet',
+          'majorationFinMois', 'heureFixeDeplacement', 'seuilDeplacementMin',
+          'vitesseMoyenne', 'taxeTPS', 'taxeTVQ',
+          'temps_1_5_chargement', 'temps_1_5_dechargement',
+          'temps_2_5_chargement', 'temps_2_5_dechargement',
+          'temps_3_5_chargement', 'temps_3_5_dechargement',
+          'temps_4_5_chargement', 'temps_4_5_dechargement',
+          'temps_5_5_chargement', 'temps_5_5_dechargement',
+          'temps_maison_chargement', 'temps_maison_dechargement',
+          'temps_commercial_chargement', 'temps_commercial_dechargement',
+          'temps_autre_chargement', 'temps_autre_dechargement'
+        ];
+
+        fields.forEach(function (f) {
+          var el = document.getElementById(f);
+          if (el) tarifs[f] = parseFloat(el.value) || 0;
+        });
+
+        DevisEngine.sauvegarderTarifs(tarifs);
+
+        var status = document.getElementById('saveStatus');
+        status.textContent = 'Tarifs sauvegardes avec succes!';
+        status.classList.add('saved');
+
+        chargerFormulaire();
+
+        setTimeout(function () {
+          status.textContent = 'Modifiez les valeurs ci-dessus';
+          status.classList.remove('saved');
+        }, 3000);
+      });
+
+      // --- REINITIALISER ---
+      document.getElementById('btnReset').addEventListener('click', function () {
+        if (confirm('Reinitialiser tous les tarifs aux valeurs par defaut?')) {
+          DevisEngine.reinitialiserTarifs();
+          chargerFormulaire();
+
+          var status = document.getElementById('saveStatus');
+          status.textContent = 'Tarifs reinitialises aux valeurs par defaut.';
+          status.classList.add('saved');
+          setTimeout(function () {
+            status.textContent = 'Modifiez les valeurs ci-dessus';
+            status.classList.remove('saved');
+          }, 3000);
+        }
+      });
+
+    });
+  </script>
+</body>
+</html>
