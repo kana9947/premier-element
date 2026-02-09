@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="gold" x1="80" y1="80" x2="320" y2="320" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F0D060"/>
+      <stop offset="30%" stop-color="#D4AF37"/>
+      <stop offset="60%" stop-color="#E8C44A"/>
+      <stop offset="100%" stop-color="#A07820"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fond rouge du cercle -->
+  <circle cx="200" cy="200" r="179" fill="#991B1B"/>
+
+  <!-- Structure Y en or (3 branches à 120°) -->
+  <!-- Branche vers le bas (90°) -->
+  <line x1="200" y1="200" x2="200" y2="386" stroke="url(#gold)" stroke-width="11"/>
+  <!-- Branche vers le haut-gauche (210°) -->
+  <line x1="200" y1="200" x2="39" y2="107" stroke="url(#gold)" stroke-width="11"/>
+  <!-- Branche vers le haut-droit (330°) -->
+  <line x1="200" y1="200" x2="361" y2="107" stroke="url(#gold)" stroke-width="11"/>
+  <!-- Centre structurel -->
+  <circle cx="200" cy="200" r="8" fill="url(#gold)"/>
+
+  <!-- Contour extérieur or épais -->
+  <circle cx="200" cy="200" r="186" fill="none" stroke="url(#gold)" stroke-width="14"/>
+
+  <!-- ===== QUARTIER SUPÉRIEUR : PROTECTION (Bouclier + ✓) ===== -->
+  <g transform="translate(200,100)">
+    <path d="M0,-35 L-27,-22 L-27,2 Q-27,26 0,40 Q27,26 27,2 L27,-22 Z" fill="#2E7D32"/>
+    <path d="M-11,0 L-3,12 L14,-12" fill="none" stroke="#66BB6A" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- ===== QUARTIER GAUCHE : VAILLANCE (Flèche diagonale montante) ===== -->
+  <g transform="translate(112,258)">
+    <g transform="rotate(-45)">
+      <rect x="-5" y="-4" width="10" height="32" rx="2" fill="#2E7D32"/>
+      <polygon points="0,-25 -14,-4 14,-4" fill="#2E7D32"/>
+    </g>
+  </g>
+
+  <!-- ===== QUARTIER DROIT : RIGUEUR (Règle verticale + ✓) ===== -->
+  <g transform="translate(287,250)">
+    <!-- Corps de la règle -->
+    <rect x="-9" y="-28" width="18" height="56" rx="2" fill="none" stroke="#2E7D32" stroke-width="3.5"/>
+    <!-- Repères de mesure -->
+    <line x1="-9" y1="-20" x2="0" y2="-20" stroke="#2E7D32" stroke-width="2"/>
+    <line x1="-9" y1="-12" x2="3" y2="-12" stroke="#2E7D32" stroke-width="2.5"/>
+    <line x1="-9" y1="-4" x2="0" y2="-4" stroke="#2E7D32" stroke-width="2"/>
+    <line x1="-9" y1="4" x2="3" y2="4" stroke="#2E7D32" stroke-width="2.5"/>
+    <line x1="-9" y1="12" x2="0" y2="12" stroke="#2E7D32" stroke-width="2"/>
+    <line x1="-9" y1="20" x2="3" y2="20" stroke="#2E7D32" stroke-width="2.5"/>
+    <!-- Check de conformité -->
+    <path d="M15,-2 L20,7 L31,-10" fill="none" stroke="#2E7D32" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
