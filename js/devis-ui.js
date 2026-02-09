@@ -1,6 +1,7 @@
 /* ============================================
    PREMIER ELEMENT — UI Estimateur demenagement
    Gestion des etapes, formulaires, affichage
+   Depart fixe 8h — Etages — Soumission
    ============================================ */
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -8,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var currentStep = 1;
   var pickupCount = 1;
   var dropoffCount = 1;
+  var dernierDevis = null; // stocke le dernier devis calcule
 
   // --- Navigation entre etapes ---
   function goToStep(step) {
@@ -48,6 +50,15 @@ document.addEventListener('DOMContentLoaded', function () {
       '<div class="form-group" style="margin-bottom:12px;">' +
       '<input type="text" class="pickup-address" placeholder="Adresse complete avec code postal">' +
       '</div>' +
+      '<div class="etage-select">' +
+      '<label>Etage du logement</label>' +
+      '<select class="pickup-etage">' +
+      '<option value="rdc">Rez-de-chaussee</option>' +
+      '<option value="2e">2e etage (sans ascenseur)</option>' +
+      '<option value="3e">3e etage (sans ascenseur)</option>' +
+      '<option value="4e">4e etage et + (sans ascenseur)</option>' +
+      '<option value="ascenseur">Avec ascenseur</option>' +
+      '</select></div>' +
       '<div class="address-status" data-for="pickup-' + (pickupCount - 1) + '"></div>' +
       '</div>';
     document.getElementById('pickupList').insertAdjacentHTML('beforeend', html);
@@ -66,6 +77,15 @@ document.addEventListener('DOMContentLoaded', function () {
       '<div class="form-group" style="margin-bottom:12px;">' +
       '<input type="text" class="dropoff-address" placeholder="Adresse complete avec code postal">' +
       '</div>' +
+      '<div class="etage-select">' +
+      '<label>Etage du logement</label>' +
+      '<select class="dropoff-etage">' +
+      '<option value="rdc">Rez-de-chaussee</option>' +
+      '<option value="2e">2e etage (sans ascenseur)</option>' +
+      '<option value="3e">3e etage (sans ascenseur)</option>' +
+      '<option value="4e">4e etage et + (sans ascenseur)</option>' +
+      '<option value="ascenseur">Avec ascenseur</option>' +
+      '</select></div>' +
       '<div class="address-status" data-for="dropoff-' + (dropoffCount - 1) + '"></div>' +
       '</div>';
     document.getElementById('dropoffList').insertAdjacentHTML('beforeend', html);
@@ -100,6 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
     dateInput.setAttribute('min', yyyy + '-' + mm + '-' + dd);
     dateInput.addEventListener('change', function () {
       afficherInfoDate(this.value);
+      verifierDispo(this.value);
     });
   }
 
@@ -146,6 +167,24 @@ document.addEventListener('DOMContentLoaded', function () {
     dateInfo.classList.add('visible');
   }
 
+  // --- Verifier disponibilite ---
+  function verifierDispo(dateStr) {
+    var dispoEl = document.getElementById('dispoInfo');
+    if (!dateStr) { dispoEl.classList.remove('visible'); return; }
+
+    var dispo = DevisEngine.verifierDisponibilite(dateStr);
+    dispoEl.classList.remove('dispo-ok', 'dispo-full');
+    dispoEl.classList.add('visible');
+
+    if (dispo.disponible) {
+      dispoEl.classList.add('dispo-ok');
+      dispoEl.textContent = 'Disponible — ' + dispo.placesDisponibles + ' place(s) restante(s) sur ' + dispo.placesTotal + ' pour cette date.';
+    } else {
+      dispoEl.classList.add('dispo-full');
+      dispoEl.textContent = 'Complet — Les ' + dispo.placesTotal + ' camions sont deja reserves pour cette date. Veuillez choisir une autre date.';
+    }
+  }
+
   // --- Navigation boutons ---
   document.getElementById('toStep2').addEventListener('click', function () {
     var pickups = document.querySelectorAll('.pickup-address');
@@ -176,10 +215,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // --- CALCUL DU DEVIS ---
   document.getElementById('toStep3').addEventListener('click', function () {
     var dateVal = document.getElementById('devisDate').value;
-    var heureVal = document.getElementById('devisHeure').value;
 
     if (!dateVal) { document.getElementById('devisDate').style.borderColor = 'var(--error)'; return; }
-    if (!heureVal) { document.getElementById('devisHeure').style.borderColor = 'var(--error)'; return; }
+    document.getElementById('devisDate').style.borderColor = '';
 
     goToStep(3);
 
@@ -189,6 +227,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // Collecter taille logement
     var tailleRadio = document.querySelector('input[name="tailleLogement"]:checked');
     var tailleLogement = tailleRadio ? tailleRadio.value : '3.5';
+
+    // Collecter etage (on prend le premier de chaque type comme reference principale)
+    var pickupEtageEl = document.querySelector('.pickup-etage');
+    var dropoffEtageEl = document.querySelector('.dropoff-etage');
+    var etageRamassage = pickupEtageEl ? pickupEtageEl.value : 'rdc';
+    var etageDepot = dropoffEtageEl ? dropoffEtageEl.value : 'rdc';
 
     // Collecter adresses
     var pickupInputs = document.querySelectorAll('.pickup-address');
@@ -222,9 +266,12 @@ document.addEventListener('DOMContentLoaded', function () {
         adressesRamassage: pickupAddresses,
         adressesDepot: dropoffAddresses,
         tailleLogement: tailleLogement,
+        etageRamassage: etageRamassage,
+        etageDepot: etageDepot,
         date: dateVal,
-        heure: heureVal
+        heure: '08:00'
       });
+      dernierDevis = devis;
       afficherResultat(devis);
     }).catch(function (err) {
       console.error('Erreur calcul devis:', err);
@@ -237,6 +284,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('loadingSpinner').classList.remove('visible');
     document.getElementById('resultatContainer').style.display = 'block';
 
+    // Cacher le formulaire de soumission, montrer le formulaire
+    document.getElementById('soumissionForm').style.display = 'block';
+    document.getElementById('soumissionSuccess').classList.remove('visible');
+
     function fmt(n) { return n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' $'; }
 
     // Total
@@ -245,6 +296,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Details
     document.getElementById('resTaille').textContent = devis.tailleLogement;
     document.getElementById('resEquipe').textContent = devis.nombreDemenageurs + ' demenageurs + camion';
+    document.getElementById('resEtageRamassage').textContent = devis.etageRamassage;
+    document.getElementById('resEtageDepot').textContent = devis.etageDepot;
     document.getElementById('resDistance').textContent = devis.distanceKm + ' km';
     document.getElementById('resPickups').textContent = devis.nbAdressesRamassage;
     document.getElementById('resDropoffs').textContent = devis.nbAdressesDepot;
@@ -253,11 +306,17 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('resTempsCharg').textContent = devis.tempsChargementMin + ' min';
     document.getElementById('resTempsRoute').textContent = devis.tempsRouteMin + ' min';
     document.getElementById('resTempsDecharg').textContent = devis.tempsDechargementMin + ' min';
+    document.getElementById('resPauses').textContent = devis.totalPausesMin + ' min';
     document.getElementById('resTempsTravail').textContent = devis.tempsTravailHeures + ' h';
+
+    // Horaire
+    document.getElementById('resHeureDepart').textContent = devis.heureDepart;
+    document.getElementById('resHeureFin').textContent = devis.heureFinEstimee;
 
     // Deplacement depuis base
     document.getElementById('resDistBase').textContent = devis.distanceDepuisBase + ' km';
     document.getElementById('resTempsBase').textContent = devis.tempsDepuisBaseMin + ' min';
+    document.getElementById('resFacteurTrafic').textContent = 'x' + devis.facteurTrafic;
 
     if (devis.deplacementHorsVille) {
       document.getElementById('resDeplacementLabel').textContent = 'Deplacement hors zone (aller-retour)';
@@ -300,5 +359,50 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.scrollTo({ top: 300, behavior: 'smooth' });
   }
+
+  // --- SOUMISSION DE LA DEMANDE ---
+  document.getElementById('btnSoumettre').addEventListener('click', function () {
+    if (!dernierDevis) return;
+
+    var prenom = document.getElementById('clientPrenom').value.trim();
+    var nom = document.getElementById('clientNom').value.trim();
+    var tel = document.getElementById('clientTel').value.trim();
+    var email = document.getElementById('clientEmail').value.trim();
+    var notes = document.getElementById('clientNotes').value.trim();
+    var valid = true;
+
+    // Validation simple
+    if (!prenom) { document.getElementById('clientPrenom').style.borderColor = 'var(--error)'; valid = false; }
+    else { document.getElementById('clientPrenom').style.borderColor = ''; }
+
+    if (!nom) { document.getElementById('clientNom').style.borderColor = 'var(--error)'; valid = false; }
+    else { document.getElementById('clientNom').style.borderColor = ''; }
+
+    if (!tel) { document.getElementById('clientTel').style.borderColor = 'var(--error)'; valid = false; }
+    else { document.getElementById('clientTel').style.borderColor = ''; }
+
+    if (!email) { document.getElementById('clientEmail').style.borderColor = 'var(--error)'; valid = false; }
+    else { document.getElementById('clientEmail').style.borderColor = ''; }
+
+    if (!valid) return;
+
+    // Soumettre la reservation
+    var clientInfo = {
+      prenom: prenom,
+      nom: nom,
+      telephone: tel,
+      email: email,
+      notes: notes
+    };
+
+    var reservation = DevisEngine.soumettreReservation(dernierDevis, clientInfo);
+
+    // Afficher confirmation
+    document.getElementById('soumissionForm').style.display = 'none';
+    document.getElementById('soumissionSuccess').classList.add('visible');
+    document.getElementById('resNumero').textContent = reservation.id;
+
+    window.scrollTo({ top: 300, behavior: 'smooth' });
+  });
 
 });

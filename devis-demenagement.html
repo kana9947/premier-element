@@ -160,6 +160,35 @@
     .address-status.not-found { color: var(--error); }
     .address-status.loading { color: var(--gray-400); }
 
+    /* Selecteur etage */
+    .etage-select {
+      margin-top: 12px;
+    }
+    .etage-select label {
+      font-weight: 500;
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .etage-select select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--border-radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--gray-700);
+      background: #fff;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .etage-select select:focus {
+      outline: none;
+      border-color: var(--demenagement);
+      box-shadow: 0 0 0 3px rgba(212, 101, 42, 0.1);
+    }
+
     /* Taille logement */
     .taille-grid {
       display: grid;
@@ -213,15 +242,14 @@
       .taille-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
-    /* Calendrier & heure */
+    /* Calendrier */
     .datetime-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
     }
 
-    input[type="date"],
-    input[type="time"] {
+    input[type="date"] {
       width: 100%;
       padding: 14px 16px;
       border: 2px solid var(--gray-200);
@@ -231,11 +259,23 @@
       color: var(--gray-700);
       transition: var(--transition);
     }
-    input[type="date"]:focus,
-    input[type="time"]:focus {
+    input[type="date"]:focus {
       outline: none;
       border-color: var(--demenagement);
       box-shadow: 0 0 0 3px rgba(212, 101, 42, 0.1);
+    }
+
+    .heure-fixe-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 16px;
+      background: rgba(212, 101, 42, 0.08);
+      border: 2px solid var(--demenagement);
+      border-radius: var(--border-radius-sm);
+      font-weight: 700;
+      color: var(--demenagement);
+      font-size: 1.1rem;
     }
 
     .date-info {
@@ -257,6 +297,26 @@
       font-weight: 600;
       margin-right: 6px;
       margin-bottom: 4px;
+    }
+
+    .dispo-info {
+      margin-top: 12px;
+      padding: 12px 16px;
+      border-radius: var(--border-radius-sm);
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: none;
+    }
+    .dispo-info.visible { display: block; }
+    .dispo-info.dispo-ok {
+      background: rgba(42, 140, 90, 0.08);
+      border: 1px solid rgba(42, 140, 90, 0.3);
+      color: var(--menage);
+    }
+    .dispo-info.dispo-full {
+      background: rgba(220, 53, 69, 0.08);
+      border: 1px solid rgba(220, 53, 69, 0.3);
+      color: var(--error);
     }
 
     /* Resultats */
@@ -321,6 +381,95 @@
       text-align: center;
     }
 
+    /* Disclaimer */
+    .disclaimer-box {
+      margin-top: 24px;
+      padding: 20px;
+      background: #fff8f0;
+      border: 2px solid var(--demenagement);
+      border-radius: var(--border-radius-sm);
+      font-size: 0.9rem;
+      color: var(--gray-700);
+      line-height: 1.6;
+    }
+    .disclaimer-box strong {
+      display: block;
+      color: var(--demenagement);
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+    .disclaimer-box ul {
+      margin: 8px 0 0 20px;
+      padding: 0;
+    }
+    .disclaimer-box ul li {
+      margin-bottom: 4px;
+    }
+
+    /* Formulaire soumission */
+    .soumission-card {
+      margin-top: 32px;
+      background: #fff;
+      border-radius: var(--border-radius);
+      padding: 32px;
+      border: 2px solid var(--demenagement);
+      box-shadow: var(--shadow-sm);
+    }
+    .soumission-card h3 {
+      color: var(--demenagement);
+      margin-bottom: 8px;
+    }
+    .soumission-card .subtitle {
+      color: var(--gray-500);
+      margin-bottom: 24px;
+      font-size: 0.9rem;
+    }
+    .soumission-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .soumission-grid .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+    .soumission-card input,
+    .soumission-card textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--border-radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--gray-700);
+      transition: var(--transition);
+    }
+    .soumission-card input:focus,
+    .soumission-card textarea:focus {
+      outline: none;
+      border-color: var(--demenagement);
+      box-shadow: 0 0 0 3px rgba(212, 101, 42, 0.1);
+    }
+
+    .soumission-success {
+      display: none;
+      text-align: center;
+      padding: 32px;
+    }
+    .soumission-success.visible { display: block; }
+    .soumission-success .check-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--success);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0 auto 16px;
+    }
+
     .btn-nav-group {
       display: flex;
       gap: 16px;
@@ -349,6 +498,7 @@
     @media (max-width: 768px) {
       .devis-card { padding: 24px; }
       .datetime-grid { grid-template-columns: 1fr; }
+      .soumission-grid { grid-template-columns: 1fr; }
       .resultat-total { font-size: 2.2rem; }
       .btn-nav-group { flex-direction: column; }
     }
@@ -398,7 +548,7 @@
         </div>
         <div class="step-indicator" data-step="2">
           <div class="step-circle">2</div>
-          <div class="step-label">Date & heure</div>
+          <div class="step-label">Date</div>
         </div>
         <div class="step-indicator" data-step="3">
           <div class="step-circle">3</div>
@@ -406,7 +556,7 @@
         </div>
       </div>
 
-      <!-- ETAPE 1 : Adresses -->
+      <!-- ETAPE 1 : Logement + Adresses + Etages -->
       <div class="step-panel active" id="step1">
         <div class="devis-card">
           <h2>Type de logement</h2>
@@ -457,7 +607,7 @@
           <hr style="border: none; border-top: 1px solid var(--gray-200); margin: 32px 0;">
 
           <h2>Adresses de ramassage</h2>
-          <p class="subtitle">Ou doit-on ramasser vos biens? Vous pouvez ajouter plusieurs adresses.</p>
+          <p class="subtitle">Ou doit-on ramasser vos biens? Indiquez l'adresse et l'etage.</p>
 
           <div id="pickupList">
             <div class="address-group" data-index="0">
@@ -470,6 +620,16 @@
               <div class="form-group" style="margin-bottom: 12px;">
                 <input type="text" class="pickup-address" placeholder="Ex: 20 rue Bigaouette, Quebec, QC G1K 4K5" required>
               </div>
+              <div class="etage-select">
+                <label>Etage du logement</label>
+                <select class="pickup-etage">
+                  <option value="rdc">Rez-de-chaussee</option>
+                  <option value="2e">2e etage (sans ascenseur)</option>
+                  <option value="3e">3e etage (sans ascenseur)</option>
+                  <option value="4e">4e etage et + (sans ascenseur)</option>
+                  <option value="ascenseur">Avec ascenseur</option>
+                </select>
+              </div>
               <div class="address-status" data-for="pickup-0"></div>
             </div>
           </div>
@@ -477,7 +637,7 @@
           <button class="btn-add" id="addPickup" type="button">+ Ajouter une adresse de ramassage</button>
 
           <h2 style="margin-top: 40px;">Adresses de depot</h2>
-          <p class="subtitle">Ou doit-on livrer vos biens?</p>
+          <p class="subtitle">Ou doit-on livrer vos biens? Indiquez l'adresse et l'etage.</p>
 
           <div id="dropoffList">
             <div class="address-group" data-index="0">
@@ -489,6 +649,16 @@
               </div>
               <div class="form-group" style="margin-bottom: 12px;">
                 <input type="text" class="dropoff-address" placeholder="Ex: 500 Grande Allee Est, Quebec, QC G1R 2J7" required>
+              </div>
+              <div class="etage-select">
+                <label>Etage du logement</label>
+                <select class="dropoff-etage">
+                  <option value="rdc">Rez-de-chaussee</option>
+                  <option value="2e">2e etage (sans ascenseur)</option>
+                  <option value="3e">3e etage (sans ascenseur)</option>
+                  <option value="4e">4e etage et + (sans ascenseur)</option>
+                  <option value="ascenseur">Avec ascenseur</option>
+                </select>
               </div>
               <div class="address-status" data-for="dropoff-0"></div>
             </div>
@@ -503,11 +673,11 @@
         </div>
       </div>
 
-      <!-- ETAPE 2 : Date & Heure -->
+      <!-- ETAPE 2 : Date (heure fixe 8h) -->
       <div class="step-panel" id="step2">
         <div class="devis-card">
-          <h2>Date et heure du demenagement</h2>
-          <p class="subtitle">Choisissez la date et l'heure souhaitee pour votre demenagement.</p>
+          <h2>Date du demenagement</h2>
+          <p class="subtitle">Tous nos demenagements debutent a 8h00 le matin.</p>
 
           <div class="datetime-grid">
             <div class="form-group">
@@ -515,8 +685,8 @@
               <input type="date" id="devisDate" required>
             </div>
             <div class="form-group">
-              <label for="devisHeure">Heure souhaitee *</label>
-              <input type="time" id="devisHeure" value="08:00" required>
+              <label>Heure de depart</label>
+              <div class="heure-fixe-badge">08:00 AM</div>
             </div>
           </div>
 
@@ -525,6 +695,8 @@
             <p id="dateInfoText" style="margin: 8px 0 0; font-size: 0.9rem; color: var(--gray-600);"></p>
           </div>
 
+          <div class="dispo-info" id="dispoInfo"></div>
+
           <div class="btn-nav-group">
             <button class="btn btn-outline" id="backToStep1">&#8592; Adresses</button>
             <button class="btn btn-primary" id="toStep3" style="background: var(--demenagement);">Calculer l'estime &#8594;</button>
@@ -532,7 +704,7 @@
         </div>
       </div>
 
-      <!-- ETAPE 3 : Resultat -->
+      <!-- ETAPE 3 : Resultat + Soumission -->
       <div class="step-panel" id="step3">
 
         <div class="loading-spinner" id="loadingSpinner">
@@ -553,100 +725,178 @@
               <div class="resultat-section-title">Details du demenagement</div>
               <div class="resultat-ligne">
                 <span class="label">Type de logement</span>
-                <span class="value" id="resTaille">—</span>
+                <span class="value" id="resTaille">-</span>
               </div>
               <div class="resultat-ligne">
                 <span class="label">Equipe</span>
                 <span class="value" id="resEquipe">3 demenageurs + camion</span>
               </div>
               <div class="resultat-ligne">
+                <span class="label">Etage ramassage</span>
+                <span class="value" id="resEtageRamassage">-</span>
+              </div>
+              <div class="resultat-ligne">
+                <span class="label">Etage depot</span>
+                <span class="value" id="resEtageDepot">-</span>
+              </div>
+              <div class="resultat-ligne">
                 <span class="label">Distance totale estimee</span>
-                <span class="value" id="resDistance">—</span>
+                <span class="value" id="resDistance">-</span>
               </div>
               <div class="resultat-ligne">
                 <span class="label">Adresses de ramassage</span>
-                <span class="value" id="resPickups">—</span>
+                <span class="value" id="resPickups">-</span>
               </div>
               <div class="resultat-ligne">
                 <span class="label">Adresses de depot</span>
-                <span class="value" id="resDropoffs">—</span>
+                <span class="value" id="resDropoffs">-</span>
               </div>
 
               <div class="resultat-section-title">Temps estime</div>
               <div class="resultat-ligne">
-                <span class="label">Chargement</span>
-                <span class="value" id="resTempsCharg">—</span>
+                <span class="label">Chargement (avec pauses)</span>
+                <span class="value" id="resTempsCharg">-</span>
               </div>
               <div class="resultat-ligne">
                 <span class="label">Route entre adresses</span>
-                <span class="value" id="resTempsRoute">—</span>
+                <span class="value" id="resTempsRoute">-</span>
               </div>
               <div class="resultat-ligne">
-                <span class="label">Dechargement</span>
-                <span class="value" id="resTempsDecharg">—</span>
+                <span class="label">Dechargement (avec pauses)</span>
+                <span class="value" id="resTempsDecharg">-</span>
+              </div>
+              <div class="resultat-ligne">
+                <span class="label">Pauses incluses</span>
+                <span class="value" id="resPauses">-</span>
               </div>
               <div class="resultat-ligne" style="font-weight: 600;">
                 <span class="label">Temps de travail</span>
-                <span class="value" id="resTempsTravail">—</span>
+                <span class="value" id="resTempsTravail">-</span>
+              </div>
+
+              <div class="resultat-section-title">Horaire</div>
+              <div class="resultat-ligne">
+                <span class="label">Depart</span>
+                <span class="value" id="resHeureDepart">08:00</span>
+              </div>
+              <div class="resultat-ligne">
+                <span class="label">Fin estimee</span>
+                <span class="value" id="resHeureFin">-</span>
               </div>
 
               <div class="resultat-section-title">Deplacement</div>
               <div class="resultat-ligne">
                 <span class="label">Distance depuis notre base</span>
-                <span class="value" id="resDistBase">—</span>
+                <span class="value" id="resDistBase">-</span>
               </div>
               <div class="resultat-ligne">
                 <span class="label">Temps estime depuis la base</span>
-                <span class="value" id="resTempsBase">—</span>
+                <span class="value" id="resTempsBase">-</span>
+              </div>
+              <div class="resultat-ligne">
+                <span class="label">Facteur trafic applique</span>
+                <span class="value" id="resFacteurTrafic">-</span>
               </div>
               <div class="resultat-ligne" id="ligneDeplacementType">
                 <span class="label" id="resDeplacementLabel">Deplacement facture</span>
-                <span class="value" id="resDeplacementHeures">—</span>
+                <span class="value" id="resDeplacementHeures">-</span>
               </div>
 
               <div class="resultat-section-title">Tarification</div>
               <div class="resultat-ligne">
                 <span class="label">Taux horaire (3 demenageurs + camion)</span>
-                <span class="value" id="resTaux">—</span>
+                <span class="value" id="resTaux">-</span>
               </div>
               <div id="resMajorations"></div>
               <div class="resultat-ligne">
                 <span class="label">Travail (<span id="resHeuresTravail">0</span>h)</span>
-                <span class="value" id="resCoutTravail">—</span>
+                <span class="value" id="resCoutTravail">-</span>
               </div>
               <div class="resultat-ligne">
                 <span class="label">Deplacement (<span id="resHeuresDepl">0</span>h)</span>
-                <span class="value" id="resCoutDepl">—</span>
+                <span class="value" id="resCoutDepl">-</span>
               </div>
 
               <div class="resultat-section-title">Total</div>
               <div class="resultat-ligne">
                 <span class="label">Sous-total</span>
-                <span class="value" id="resSousTotal">—</span>
+                <span class="value" id="resSousTotal">-</span>
               </div>
               <div class="resultat-ligne">
                 <span class="label">TPS (5%)</span>
-                <span class="value" id="resTPS">—</span>
+                <span class="value" id="resTPS">-</span>
               </div>
               <div class="resultat-ligne">
                 <span class="label">TVQ (9.975%)</span>
-                <span class="value" id="resTVQ">—</span>
+                <span class="value" id="resTVQ">-</span>
               </div>
               <div class="resultat-ligne total-ligne">
                 <span class="label">Total estime</span>
-                <span class="value" id="resTotalFinal">—</span>
-              </div>
-
-              <div class="resultat-note">
-                * Cet estime est a titre indicatif et base sur 3 demenageurs + camion. Le cout final peut varier selon le volume reel, le nombre d'escaliers, les conditions d'acces et le trafic. Contactez-nous pour confirmer votre reservation.
+                <span class="value" id="resTotalFinal">-</span>
               </div>
             </div>
           </div>
 
-          <div class="btn-nav-group" style="margin-top: 32px;">
-            <button class="btn btn-outline" id="backToStep2">&#8592; Modifier</button>
-            <a href="contact.html" class="btn btn-primary" style="background: var(--demenagement);">Confirmer et reserver &#8594;</a>
+          <!-- Disclaimer -->
+          <div class="disclaimer-box">
+            <strong>Important — Ceci est un estime a titre indicatif</strong>
+            Le montant affiche est une estimation basee sur les informations fournies. Le prix final peut varier en fonction de :
+            <ul>
+              <li>Le volume reel de biens a transporter</li>
+              <li>Les conditions d'acces aux logements (stationnement, portes etroites, etc.)</li>
+              <li>Les conditions meteorologiques et le trafic routier</li>
+              <li>Les objets lourds ou encombrants (piano, spa, coffre-fort, etc.)</li>
+              <li>Tout changement de derniere minute (ajout d'adresses, items supplementaires)</li>
+            </ul>
+            Cet estime ne constitue pas un contrat. La reservation doit etre approuvee par notre equipe avant confirmation.
           </div>
+
+          <!-- Formulaire de soumission -->
+          <div class="soumission-card" id="soumissionForm">
+            <h3>Soumettre pour approbation</h3>
+            <p class="subtitle">Remplissez vos coordonnees pour soumettre cette demande. Notre equipe vous confirmera la disponibilite.</p>
+
+            <div class="soumission-grid">
+              <div class="form-group">
+                <label for="clientPrenom">Prenom *</label>
+                <input type="text" id="clientPrenom" placeholder="Votre prenom" required>
+              </div>
+              <div class="form-group">
+                <label for="clientNom">Nom *</label>
+                <input type="text" id="clientNom" placeholder="Votre nom" required>
+              </div>
+              <div class="form-group">
+                <label for="clientTel">Telephone *</label>
+                <input type="tel" id="clientTel" placeholder="(000) 000-0000" required>
+              </div>
+              <div class="form-group">
+                <label for="clientEmail">Courriel *</label>
+                <input type="email" id="clientEmail" placeholder="votre@courriel.com" required>
+              </div>
+              <div class="form-group full-width">
+                <label for="clientNotes">Notes ou demandes speciales</label>
+                <textarea id="clientNotes" placeholder="Ex: Piano a deplacer, acces difficile, objets fragiles..." style="min-height: 70px; resize: vertical;"></textarea>
+              </div>
+            </div>
+
+            <div class="btn-nav-group">
+              <button class="btn btn-outline" id="backToStep2">&#8592; Modifier</button>
+              <button class="btn btn-primary" id="btnSoumettre" style="background: var(--demenagement);">Soumettre ma demande &#8594;</button>
+            </div>
+          </div>
+
+          <!-- Confirmation soumission -->
+          <div class="soumission-success" id="soumissionSuccess">
+            <div class="check-icon">&#10003;</div>
+            <h2>Demande soumise avec succes!</h2>
+            <p style="color: var(--gray-500); margin: 12px 0 4px;">Votre numero de reservation :</p>
+            <p style="font-size: 1.3rem; font-weight: 700; color: var(--demenagement);" id="resNumero">-</p>
+            <p style="color: var(--gray-500); margin: 16px 0;">
+              Notre equipe examinera votre demande et vous contactera sous 24h pour confirmer la disponibilite et le prix final.
+            </p>
+            <a href="index.html" class="btn btn-primary" style="background: var(--demenagement); margin-top: 16px;">Retour a l'accueil</a>
+          </div>
+
         </div>
       </div>
 
